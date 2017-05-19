@@ -1,6 +1,18 @@
 # ActiveDirectorySample
 The sample project that goes with the Active Directory Blogpost.
 
+# Disclaimer
+
+This Project is meant to be a sample for the corresponding Blogpost. Therefore, certain elements that you might usually come to expect from a project such as this, have been omitted, so that the solution doesn't get too cumbersome.
+These elements include:
+- Usage of Configuration Extensions
+- Acces Protection, such as IAM
+- Usage of Http Middleware
+
+However, in order to make proper usage of the Microservice architecture, there are two key elements that *have* been included, but are not actually required by the topic:
+- IoC via [Autofac](https://autofac.org/)
+- Object Mapping via [AutoMapper](http://automapper.org/)
+
 # Installation
 
 To run this project, you need the following prerequisites:
