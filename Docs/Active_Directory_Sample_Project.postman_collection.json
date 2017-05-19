@@ -1,0 +1,371 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Active Directory Sample Project",
+		"_postman_id": "19eb498a-538b-502c-f791-f2123ede4df7",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var jsonObject = xml2Json(responseBody);",
+							"",
+							"var schema = {",
+							" \"items\": {",
+							"    \"Id\": \"string\",",
+							"    \"DistinguishedName\": \"string\",",
+							"    \"SamAccountName\": \"string\",",
+							"    \"ForeName\": \"string\",",
+							"    \"SurName\": \"string\",",
+							"    \"FullName\": \"string\",",
+							"    \"DisplayName\": \"string\",",
+							"    \"Description\": \"string\",",
+							"    \"Email\": \"string\",",
+							"    \"Disabled\": \"boolean\",",
+							"    \"Locked\": \"boolean\",",
+							"    \"IsExpired\": \"boolean\",",
+							"    \"UserGroups\": \"array\",",
+							"    \"UserMustResetPassword\": \"boolean\",",
+							"    \"HomePage\": \"string\"",
+							" }",
+							"};",
+							"",
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response time is less than 500ms\"] = responseTime < 500;",
+							"tests[\"Validate response data\"] = tv4.validate(jsonObject, schema);",
+							"",
+							"if (tv4.error) {",
+							"    console.log(\"Response validation errors: \", tv4.error);",
+							"}"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{BackendAddress}}{{urlprefix}}/users/Customer1",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get by Search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var jsonObject = xml2Json(responseBody);",
+							"",
+							"var schema = {",
+							" \"items\": {",
+							"    \"Id\": \"string\",",
+							"    \"DistinguishedName\": \"string\",",
+							"    \"SamAccountName\": \"string\",",
+							"    \"ForeName\": \"string\",",
+							"    \"SurName\": \"string\",",
+							"    \"FullName\": \"string\",",
+							"    \"DisplayName\": \"string\",",
+							"    \"Description\": \"string\",",
+							"    \"Email\": \"string\",",
+							"    \"Disabled\": \"boolean\",",
+							"    \"Locked\": \"boolean\",",
+							"    \"IsExpired\": \"boolean\",",
+							"    \"UserGroups\": \"array\",",
+							"    \"UserMustResetPassword\": \"boolean\",",
+							"    \"HomePage\": \"string\"",
+							" }",
+							"};",
+							"",
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response time is less than 500ms\"] = responseTime < 500;",
+							"tests[\"Validate response data\"] = tv4.validate(jsonObject, schema);",
+							"",
+							"if (tv4.error) {",
+							"    console.log(\"Response validation errors: \", tv4.error);",
+							"}"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{BackendAddress}}{{urlprefix}}/users/Customer1?expression=h",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var jsonObject = xml2Json(responseBody);",
+							"",
+							"var schema = {",
+							" \"items\": {",
+							"    \"Id\": \"string\",",
+							"    \"DistinguishedName\": \"string\",",
+							"    \"SamAccountName\": \"string\",",
+							"    \"ForeName\": \"string\",",
+							"    \"SurName\": \"string\",",
+							"    \"FullName\": \"string\",",
+							"    \"DisplayName\": \"string\",",
+							"    \"Description\": \"string\",",
+							"    \"Email\": \"string\",",
+							"    \"Disabled\": \"boolean\",",
+							"    \"Locked\": \"boolean\",",
+							"    \"IsExpired\": \"boolean\",",
+							"    \"UserGroups\": \"array\",",
+							"    \"UserMustResetPassword\": \"boolean\",",
+							"    \"HomePage\": \"string\"",
+							" }",
+							"};",
+							"",
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response time is less than 500ms\"] = responseTime < 500;",
+							"tests[\"Validate response data\"] = tv4.validate(jsonObject, schema);",
+							"",
+							"if (tv4.error) {",
+							"    console.log(\"Response validation errors: \", tv4.error);",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"postman.setEnvironmentVariable(\"username\", \"buchowski\");"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{BackendAddress}}{{urlprefix}}/users/Customer1/{{username}}",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 201 - User created\"] = responseCode.code === 201;",
+							"tests[\"Response time is less than 2000ms\"] = responseTime < 2000;",
+							"",
+							"var address = postman.getEnvironmentVariable(\"address\");",
+							"var urlprefix = postman.getEnvironmentVariable(\"urlprefix\");",
+							"",
+							"var responseObject = JSON.parse(responseBody);",
+							"",
+							"var getUserUrl = address + urlprefix + \"/users/\" + responseObject.samAccountName;",
+							"",
+							"// Note: The created user gets a prefix applied to his SamAccountName. The prefix matches the users customer number.",
+							"// However, the customer number is contained within the JWT security token, which cannot be parsed in this script. ",
+							"// Therefore, the location-URL can only be reliably verified, if the actual SamAccountName is provided in the response body.",
+							"tests[\"Response contains url to retrieve the user\"] = responseObject.location === getUserUrl;",
+							"",
+							"if (!tests[\"Response contains url to retrieve the user\"]) {",
+							"    console.log(responseObject);",
+							"}",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var requestData = JSON.parse(request.data);",
+							"",
+							"postman.setEnvironmentVariable(\"username\", requestData.SamAccountNameWithoutPrefix);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{BackendAddress}}{{urlprefix}}/users/Customer1",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"SamAccountName\": \"kasperhauser123\",\n  \"ForeName\": \"Kasper1\",\n  \"SurName\": \"Hauser23\",\n  \"Email\": \"koenig@kasperhauser.de\",\n  \"Password\": \"randomPassw0rd\",\n  \"Description\": \"Bla\",\n  \"DisplayName\": \"Heinz Buchowski\",\n  \"ExpirationDate\": \"2017-12-31T20:00:00\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Enable User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response time is less than 500ms\"] = responseTime < 500;",
+							"",
+							"var address = postman.getEnvironmentVariable(\"address\");",
+							"var urlprefix = postman.getEnvironmentVariable(\"urlprefix\");",
+							"var username = postman.getEnvironmentVariable(\"username\");",
+							"",
+							"var getUserUrl = address + urlprefix + \"/users/\" + username;",
+							"",
+							"tests[\"Response contains url to retrieve the user\"] = responseBody.has(getUserUrl);",
+							"",
+							"if (!tests[\"Response contains url to retrieve the user\"]) {",
+							"    console.log(responseBody);",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"postman.setEnvironmentVariable(\"username\", \"buchowski\");"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{BackendAddress}}{{urlprefix}}/users/Customer1/{{username}}/enable",
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Disable User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response time is less than 500ms\"] = responseTime < 500;",
+							"",
+							"var address = postman.getEnvironmentVariable(\"address\");",
+							"var urlprefix = postman.getEnvironmentVariable(\"urlprefix\");",
+							"var username = postman.getEnvironmentVariable(\"username\");",
+							"",
+							"var getUserUrl = address + urlprefix + \"/users/\" + username;",
+							"",
+							"tests[\"Response contains url to retrieve the user\"] = responseBody.has(getUserUrl);",
+							"",
+							"if (!tests[\"Response contains url to retrieve the user\"]) {",
+							"    console.log(responseBody);",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"postman.setEnvironmentVariable(\"username\", \"buchowski\");"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{BackendAddress}}{{urlprefix}}/users/Customer1/{{username}}/disable",
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Response time is less than 500ms\"] = responseTime < 500;",
+							"",
+							"var address = postman.getEnvironmentVariable(\"address\");",
+							"var urlprefix = postman.getEnvironmentVariable(\"urlprefix\");",
+							"var username = postman.getEnvironmentVariable(\"username\");",
+							"",
+							"var getUserUrl = address + urlprefix + \"/users/\" + username;",
+							"",
+							"tests[\"Response contains url to retrieve the user\"] = responseBody.has(getUserUrl);",
+							"",
+							"if (!tests[\"Response contains url to retrieve the user\"]) {",
+							"    console.log(responseBody);",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"postman.setEnvironmentVariable(\"username\", \"buchowski\");"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{BackendAddress}}{{urlprefix}}/users/Customer1/{{username}}/",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"ForeName\": \"Heinz\",\n  \"SurName\": \"Buchowski\",\n  \"Email\": \"some@email.de\",\n  \"Description\": \"Bla\",\n  \"DisplayName\": \"Heinz Buchowski\",\n  \"ExpirationDate\": \"2016-12-31T20:00:00\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

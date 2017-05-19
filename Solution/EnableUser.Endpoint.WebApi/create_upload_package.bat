@@ -1,0 +1,1 @@
+﻿../../../tooling/nuget/create_and_upload_package.bat -directory ../../backend/UserMicroService -contracts NotExisting -implementation User.Endpoint.WebApi
