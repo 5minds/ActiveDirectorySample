@@ -12,6 +12,42 @@
     public static class ActiveDirectoryConnector
     {
         /// <summary>
+        /// Builds the directory entry upon which to run all the ActiveDirectory related queries.
+        /// </summary>
+        /// <param name="customerName">Additional parameter for a customers number.</param>
+        /// <returns>The directory searcher.</returns>
+        public static DirectoryEntry GetDirectorEntry(string customerName)
+        {
+            try
+            {
+                // Build a connection string that connects directly to the customers Organizational Unit.
+                // This way, the connecting customer can only alter users and groups which belong to his own Organizational Unit
+                // ------
+                // REPLACE THESE SETTINGS WITH YOUR OWN ENVIRONMENT
+                // ------
+                var connectionString = "LDAP://WIN-3IQC3CKVBOO.BluePrint.local/OU=" + customerName + ",OU=Blogpost,DC=BluePrint,DC=local";
+
+                // Create the DirectoryEntry object with which to connect to the Active Directory.
+                var directoryRootEntry = new DirectoryEntry(connectionString);
+
+                // Check if the connection was successful.
+                VerifyDirectoryEntry(ref directoryRootEntry);
+
+                return directoryRootEntry;
+            }
+            catch (COMException e)
+            {
+                Console.Write(e.Message);
+                throw new Exception("Cannot establish Active Directory connection. Please check the settings and make sure the server is available.", e);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Builds the directory searcher upon which to run all the ActiveDirectory related queries.
         /// </summary>
         /// <param name="customerName">Additional parameter for a customers number.</param>

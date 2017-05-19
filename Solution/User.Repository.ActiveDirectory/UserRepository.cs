@@ -95,60 +95,58 @@
         /// <param name="userData">The data for the new account.</param>
         public void Create(string customerName, UserFromRepository userData)
         {
-            var connectionString = "LDAP://WIN-3IQC3CKVBOO.BluePrint.local/OU=" + customerName + ",OU=BlogPost,DC=BluePrint,DC=local";
-
-            var directoryRootEntry = new DirectoryEntry(connectionString);
-            var domainName = this.GetDomainNameFromLdapPath(connectionString);
-
-            userData.Name = $"{userData.ForeName} {userData.SurName}";
-            userData.Cn = userData.SamAccountName;
-
-            try
+            using (var directoryRootEntry = ActiveDirectoryConnector.GetDirectorEntry(customerName))
             {
-                if (this.DirectoryEntryContainsUser(directoryRootEntry, userData.Cn))
-                {
-                    throw new UserAlreadyExistsException($"A user with the CN '{userData.Cn}' already exists.");
-                }
+                userData.Name = $"{userData.ForeName} {userData.SurName}";
+                userData.Cn = userData.SamAccountName;
 
-                if (this.DirectoryEntryContainsAccount(directoryRootEntry, userData.SamAccountName))
-                {
-                    throw new UserAlreadyExistsException($"A user with the sAMAccountName '{userData.SamAccountName}' already exists.");
-                }
-
-                var newUser = directoryRootEntry.Children.Add($"CN={userData.Cn}", "user");
-
-                var userPrincipalName = $"{userData.SamAccountName}@{domainName}";
-                this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.UserPrincipalName, userPrincipalName);
-                this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.SamAccountName, userData.SamAccountName);
-                this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.AccountExpires, this.ParseDateToFileSystemTimeOrDefault(userData.ExpirationDate));
-                this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.Name, userData.Name);
-                this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.FirstName, userData.ForeName);
-                this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.LastName, userData.SurName);
-                this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.Mail, userData.Email);
-                this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.Description, userData.Description);
-                this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.DisplayName, userData.DisplayName);
-
-                // Password and Group Memberships cannot be set during an initial registration.
-                // Both can only be set on already existing users, therefore the user must be saved, before we can proceed.
                 try
                 {
-                    newUser.CommitChanges();
+                    if (this.DirectoryEntryContainsUser(directoryRootEntry, userData.Cn))
+                    {
+                        throw new UserAlreadyExistsException($"A user with the CN '{userData.Cn}' already exists.");
+                    }
+
+                    if (this.DirectoryEntryContainsAccount(directoryRootEntry, userData.SamAccountName))
+                    {
+                        throw new UserAlreadyExistsException($"A user with the sAMAccountName '{userData.SamAccountName}' already exists.");
+                    }
+
+                    var newUser = directoryRootEntry.Children.Add($"CN={userData.Cn}", "user");
+
+                    var userPrincipalName = $"{userData.SamAccountName}@Blueprint.local";
+                    this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.UserPrincipalName, userPrincipalName);
+                    this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.SamAccountName, userData.SamAccountName);
+                    this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.AccountExpires, this.ParseDateToFileSystemTimeOrDefault(userData.ExpirationDate));
+                    this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.Name, userData.Name);
+                    this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.FirstName, userData.ForeName);
+                    this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.LastName, userData.SurName);
+                    this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.Mail, userData.Email);
+                    this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.Description, userData.Description);
+                    this.SetUserProperty(newUser, ActiveDirectoryAttributeNames.DisplayName, userData.DisplayName);
+
+                    // Password and Group Memberships cannot be set during an initial registration.
+                    // Both can only be set on already existing users, therefore the user must be saved, before we can proceed.
+                    try
+                    {
+                        newUser.CommitChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        newUser.Close();
+                        throw new UserNotCreatedException("Failed to create user!", ex);
+                    }
+
+                    // Set the new users password to the given value.
+                    this.SetUserPassword(newUser, userData.Password);
+
+                    // Add the User to some groups.
+                    this.AddUserToSampleGroups(directoryRootEntry, newUser, customerName);
                 }
-                catch (Exception ex)
+                finally
                 {
-                    newUser.Close();
-                    throw new UserNotCreatedException("Failed to create user!", ex);
+                    directoryRootEntry.Close();
                 }
-
-                // Set the new users password to the given value.
-                this.SetUserPassword(newUser, userData.Password);
-
-                // Add the User to some groups.
-                this.AddUserToSampleGroups(directoryRootEntry, newUser, customerName);
-            }
-            finally
-            {
-                directoryRootEntry.Close();
             }
         }
 
